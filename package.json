@@ -4,19 +4,29 @@
     "description": "Assignment 2 for backend engineering launchpad",
     "main": "index.js",
     "scripts": {
-      "pretest": "node -e \"if (process.version.slice(1).split('.')[0] < 18) { console.error('Unsupported Node.js version, please use version 18'); process.exit(1); }\"",
-      "test": "tap test/*.js --disable-coverage"
+        "start": "node server.js",
+        "dev": "node --watch server.js",
+        "pretest": "node -e \"if (process.version.slice(1).split('.')[0] < 18) { console.error('Unsupported Node.js version, please use version 18'); process.exit(1); }\"",
+        "test": "tap test/*.test.js test/server.test.js --disable-coverage --timeout=120"
     },
     "author": "Airtribe",
     "license": "ISC",
     "devDependencies": {
-      "supertest": "^6.3.4",
-      "tap": "^18.6.1"
+        "mongodb-memory-server": "^11.2.0",
+        "supertest": "^6.3.4",
+        "tap": "^18.8.0"
     },
     "dependencies": {
-      "express": "^4.18.2"
+        "bcrypt": "^6.0.0",
+        "dotenv": "^17.4.2",
+        "express": "^4.22.2",
+        "helmet": "^8.3.0",
+        "jsonwebtoken": "^9.0.3",
+        "mongoose": "^9.7.4",
+        "pino": "^10.3.1",
+        "zod": "^4.4.3"
     },
     "engines": {
-      "node": ">= 18.0.0"
+        "node": ">= 18.0.0"
     }
 }
