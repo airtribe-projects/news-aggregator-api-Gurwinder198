@@ -1,2 +1,9 @@
 node_modules
 .tap
+.env
+.env.local
+
+# Internal planning/working docs — not for the published repo (README is the only tracked .md)
+docs/superpowers/
+.superpowers/
+.playwright-mcp/
