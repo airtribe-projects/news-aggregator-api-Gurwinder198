@@ -21,7 +21,7 @@ function buildBody(keywords, apiKey) {
     action: 'getArticles',
     keyword: keywords,
     keywordOper: 'or',
-    articlescount: 20,
+    articlesCount: 20,
     resultType: 'articles',
     dataType: ['news'],
     apiKey,
@@ -58,6 +58,8 @@ async function getNews(keywords, opts = {}) {
     const data = await res.json();
     const results = (data.articles && data.articles.results) || [];
     const news = results.map(normalize);
+    // A successful (even empty) response is cached for the full TTL to protect the
+    // 2000 req/month quota; only failures skip the cache so they retry on next call.
     store.set(key, news, ttlMs);
     return news;
   } catch (err) {
