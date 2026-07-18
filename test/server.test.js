@@ -1,7 +1,10 @@
 const tap = require('tap');
 const supertest = require('supertest');
+const { startTestDB, stopTestDB } = require('./helpers/setup');
 const app = require('../app');
 const server = supertest(app);
+
+tap.before(startTestDB);
 
 const mockUser = {
     name: 'Clark Kent',
@@ -35,8 +38,8 @@ tap.test('POST /users/login', async (t) => {
         password: mockUser.password
     });
     t.equal(response.status, 200);
-    t.hasOwnProp(response.body, 'token');
-    token = response.body.token;
+    t.hasOwnProp(response.body.data, 'token');
+    token = response.body.data.token;
     t.end();
 });
 
@@ -54,8 +57,8 @@ tap.test('POST /users/login with wrong password', async (t) => {
 tap.test('GET /users/preferences', async (t) => {
     const response = await server.get('/users/preferences').set('Authorization', `Bearer ${token}`);
     t.equal(response.status, 200);
-    t.hasOwnProp(response.body, 'preferences');
-    t.same(response.body.preferences, mockUser.preferences);
+    t.hasOwnProp(response.body.data, 'preferences');
+    t.same(response.body.data.preferences, mockUser.preferences);
     t.end();
 });
 
@@ -75,7 +78,7 @@ tap.test('PUT /users/preferences', async (t) => {
 tap.test('Check PUT /users/preferences', async (t) => {
     const response = await server.get('/users/preferences').set('Authorization', `Bearer ${token}`);
     t.equal(response.status, 200);
-    t.same(response.body.preferences, ['movies', 'comics', 'games']);
+    t.same(response.body.data.preferences, ['movies', 'comics', 'games']);
     t.end();
 });
 
@@ -84,7 +87,7 @@ tap.test('Check PUT /users/preferences', async (t) => {
 tap.test('GET /news', async (t) => {
     const response = await server.get('/news').set('Authorization', `Bearer ${token}`);
     t.equal(response.status, 200);
-    t.hasOwnProp(response.body, 'news');
+    t.hasOwnProp(response.body.data, 'news');
     t.end();
 });
 
@@ -96,6 +99,9 @@ tap.test('GET /news without token', async (t) => {
 
 
 
-tap.teardown(() => {
-    process.exit(0);
+tap.teardown(async () => {
+    await stopTestDB();
+    // Defer exit so tap can settle this async teardown before the process dies;
+    // calling process.exit synchronously here makes tap report "test unfinished".
+    setImmediate(() => process.exit(0));
 });
