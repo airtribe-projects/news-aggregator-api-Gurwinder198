@@ -10,7 +10,7 @@ function auth(req, _res, next) {
     return next(new ApiError(401, 'Authentication required'));
   }
   try {
-    const payload = jwt.verify(token, config.jwt.secret);
+    const payload = jwt.verify(token, config.jwt.secret, { algorithms: ['HS256'] });
     req.userId = payload.userId;
     next();
   } catch (_e) {

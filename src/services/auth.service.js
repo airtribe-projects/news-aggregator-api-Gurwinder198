@@ -11,8 +11,15 @@ async function signup({ name, email, password, preferences = [] }) {
   const existing = await User.findOne({ email: email.toLowerCase() });
   if (existing) throw new ApiError(409, 'Email already registered');
   const hash = await bcrypt.hash(password, SALT_ROUNDS);
-  const user = await User.create({ name, email, password: hash, preferences });
-  return user.toJSON();
+  try {
+    const user = await User.create({ name, email, password: hash, preferences });
+    return user.toJSON();
+  } catch (err) {
+    // The unique index is the real guarantee: a concurrent signup can slip past
+    // the findOne check above, so translate the duplicate-key error to 409 too.
+    if (err && err.code === 11000) throw new ApiError(409, 'Email already registered');
+    throw err;
+  }
 }
 
 async function login({ email, password }) {

@@ -5,7 +5,8 @@ const env = process.env.NODE_ENV || 'development';
 const isTest = env === 'test';
 
 function required(name, fallback) {
-  const val = process.env[name] ?? fallback;
+  // Treat an empty string as missing so a blank JWT_SECRET/MONGO_URI still fails fast.
+  const val = process.env[name] || fallback;
   if (val === undefined && !isTest) {
     throw new Error(`Missing required env var: ${name}`);
   }

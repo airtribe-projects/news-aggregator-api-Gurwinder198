@@ -18,7 +18,6 @@ function normalize(article) {
 
 function buildBody(keywords, apiKey) {
   return {
-    action: 'getArticles',
     keyword: keywords,
     keywordOper: 'or',
     articlesCount: 20,

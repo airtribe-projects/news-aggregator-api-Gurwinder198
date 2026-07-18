@@ -23,3 +23,17 @@ tap.test('auth rejects missing token with 401', async (t) => {
   t.equal(err.statusCode, 401);
   t.end();
 });
+
+tap.test('auth rejects a token signed with the wrong secret with 401', async (t) => {
+  const token = jwt.sign({ userId: 'abc' }, 'not-the-real-secret');
+  const { err } = await runAuth({ headers: { authorization: `Bearer ${token}` } });
+  t.equal(err.statusCode, 401);
+  t.end();
+});
+
+tap.test('auth rejects an expired token with 401', async (t) => {
+  const token = jwt.sign({ userId: 'abc' }, config.jwt.secret, { expiresIn: '-1s' });
+  const { err } = await runAuth({ headers: { authorization: `Bearer ${token}` } });
+  t.equal(err.statusCode, 401);
+  t.end();
+});
